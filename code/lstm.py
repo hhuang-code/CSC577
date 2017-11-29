@@ -18,8 +18,10 @@ h0 = autograd.Variable(torch.rand(1, 1, 256))
 # (num_layers * num_directions, batch, hidden_size)
 c0 = autograd.Variable(torch.rand(1, 1, 256))
 
+# out: (seq_len, batch, hidden_size * num_directions)
+# hidden: a tuple of (h_n, c_n)
 for i in inputs:
-    out, hidden = lstm(i.view(1, 1, -1), (h0, c0))
+    out, hidden = lstm(i.view(300, 1, 1024), (h0, c0))
 
 pdb.set_trace()
 
