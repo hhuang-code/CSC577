@@ -7,6 +7,10 @@ from torch.autograd import Variable
 
 import h5py
 import numpy as np
+from tqdm import tqdm
+
+from data_loader import feature_loader
+from networks.Summarizer import Summarizer
 
 import pdb
 
@@ -94,7 +98,7 @@ class ResNet(nn.Module):
         
 
 if __name__ == '__main__':
-    
+    """    
     dir_path = Path('/home/aaron/Documents/Courses/577/dataset/frame/Youtube/v20')
 
     resnet = ResNet(224)
@@ -117,3 +121,17 @@ if __name__ == '__main__':
     h5file = h5py.File('/home/aaron/Documents/Courses/577/dataset/feature/Youtube/v20.h5', 'w')
     h5file.create_dataset('pool5', data = video_feature)
     h5file.close()
+    """
+
+    #pdb.set_trace()
+    fea_dir = Path('/home/aaron/Documents/Courses/577/dataset/feature/Youtube')
+    
+    train_loader = feature_loader(fea_dir, 'train')
+
+    for batch_idx, feature in enumerate(tqdm(train_loader, desc = 'Batch', leave = False)):
+        if batch_idx == 1:
+            summarizer = Summarizer(2048, 2048).cuda()
+            # feature: (1, seq_len, input_size) -> (seq_len, 1, input_size)
+            feature = Variable(feature.view(feature.shape[1], -1, feature.shape[2]))
+            weighted_feature = summarizer(feature.cuda())
+            print(weighted_feature)
