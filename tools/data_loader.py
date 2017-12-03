@@ -35,5 +35,7 @@ def feature_loader(fea_dir, mode = 'train'):
     #pdb.set_trace()
     if mode.lower() == 'train':
         return DataLoader(FeatureData(fea_dir), batch_size = 1)
+    elif mode.lower() == 'test':
+        return DataLoader(FeatureData(fea_dir), batch_size = 1)
     else:
         raise "No such mode!"
