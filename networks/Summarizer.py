@@ -13,17 +13,18 @@ class sLSTM(nn.Module):
         self.num_layers = num_layers
         self.bidirectional = bidirectional
 
-        pdb.set_trace()
+        #pdb.set_trace()
 
         self.lstm = nn.LSTM(input_size, hidden_size, num_layers, bidirectional = bidirectional)
         self.to_score = nn.Sequential(
                 nn.Linear(hidden_size * 2, 1) # bidirection -> scalar
                 )
-        self.hidden_0 = self.init_hidden()
-
+        #self.hidden_0 = self.init_hidden()
+    """
     def init_hidden(self):
         return (Variable(torch.zeros(self.num_layers * 2, 1, self.hidden_size).cuda()),
                 Variable(torch.zeros(self.num_layers * 2, 1, self.hidden_size)).cuda())
+    """
 
     """
     Args:
@@ -32,9 +33,10 @@ class sLSTM(nn.Module):
         scores: normalized, (seq_len, 1)
     """
     def forward(self, x):
-        pdb.set_trace()
+        #pdb.set_trace()
+        self.lstm.flatten_parameters()
         # output: (seq_len, 1, hidden_size * 2) = (seq_len, 1, 4096)
-        output, (h_n, c_n) = self.lstm(x, self.hidden_0)
+        output, (h_n, c_n) = self.lstm(x)
         # scores: (seq_len, 1)
         scores = self.to_score(output.squeeze(1))
 
@@ -50,12 +52,12 @@ class eLSTM(nn.Module):
         self.bidirectional = bidirectional
         
         self.lstm = nn.LSTM(input_size, hidden_size, num_layers, bidirectional = bidirectional)
-        self.hidden_0 = self.init_hidden()
-
+        #self.hidden_0 = self.init_hidden()
+    """
     def init_hidden(self):
         return (Variable(torch.zeros(self.num_layers * 1, 1, self.hidden_size).cuda()),
                 Variable(torch.zeros(self.num_layers * 1, 1, self.hidden_size).cuda()))
-    
+    """ 
     """
     Args:
         x: weighted_features, (seq_len, 1, input_size) = (seq_len, 1, 2048)
@@ -63,10 +65,11 @@ class eLSTM(nn.Module):
         fixed length feature: a tuple, each of (num_layers * 1, 1, hidden_size)
     """
     def forward(self, x):
-        pdb.set_trace()
+        #pdb.set_trace()
+        self.lstm.flatten_parameters()
         # output: (seq_len, 1, hidden_size * 1) = (seq_len, 1, 2048)
         # h_c, c_n: (num_layers * 1, 1, hidden_size) = (2, 1, 2048)
-        _, (h_n, c_n) = self.lstm(x, self.hidden_0)
+        _, (h_n, c_n) = self.lstm(x)
 
         return (h_n, c_n)
 
@@ -80,12 +83,12 @@ class dLSTM(nn.Module):
         self.bidirectional = bidirectional
 
         self.lstm = nn.LSTM(input_size, hidden_size, num_layers, bidirectional = bidirectional)
-        self.hidden_0 = self.init_hidden()
-
+        #self.hidden_0 = self.init_hidden()
+    """
     def init_hidden(self):
         return (Variable(torch.zeros(self.num_layers * 1, 1, self.hidden_size).cuda()),
                 Variable(torch.zeros(self.num_layers * 1, 1, self.hidden_size).cuda()))
-
+    """
     """
     Args:
         x: fixed length feature, (seq_len, 1, input_size) = (seq_len, 1, 4096)
@@ -93,9 +96,10 @@ class dLSTM(nn.Module):
         decoded: decoded feature of a video, (seq_len, 1, hidden_size) = (seq_len, 1, 2048) 
     """
     def forward(self, x):
-        pdb.set_trace()
+        #pdb.set_trace()
+        self.lstm.flatten_parameters()
         # decoded: (seq_len, 1, hidden_size * 1) = (seq_len, 1, 2048)
-        decoded, _ = self.lstm(x, self.hidden_0)
+        decoded, _ = self.lstm(x)
 
         return decoded
 
@@ -127,7 +131,7 @@ class VAE(nn.Module):
         decoded: decoded feature of a video, (seq_len, 1, hidden_size) = (seq_len, 1, 2048)
     """
     def forward(self, x):
-        pdb.set_trace()
+        #pdb.set_trace()
         seq_len = x.size(0)
         # h_n, c_n: (num_layers * 1, 1, hidden_size) = (2, 1, 2048)
         h_n, c_n = self.elstm(x)
@@ -144,10 +148,10 @@ class VAE(nn.Module):
         h_mu = self.linear_mu(h)
         h_log_var = torch.log(self.softplus(self.linear_var(h)))
         
-        # decoded: (seq_len, 1, hidden_size) = (seq_len, 1, 2048)
+        # decoded feature: (seq_len, 1, hidden_size) = (seq_len, 1, 2048)
         decoded = self.dlstm(h_n_reshape)
 
-        return decoded
+        return h_mu, h_log_var, decoded
 
 # consist of sLSTM, VAE(eLSTM, dLSTM)
 class Summarizer(nn.Module):
@@ -160,16 +164,18 @@ class Summarizer(nn.Module):
         self.slstm = sLSTM(input_size, hidden_size, num_layers, True)
         self.vae = VAE(input_size, hidden_size, num_layers)
 
-    def forward(self, x, score_weighted_flag = True):
+    def forward(self, x, random_score_flag = False):
         # input sequence fream features are weighted with scores
-        if score_weighted_flag:
+        if not random_score_flag:
             scores = self.slstm(x)
             # weighted features: (seq_len, 1, 2048)
-            pdb.set_trace()
+            #pdb.set_trace()
             weighted_features = x * scores.view(-1, 1, 1)    # broadcasting
         else:
-            weighted_features = x
+            # generate random scores from normal distribution
+            scores = Variable(torch.randn(x.size(0), x.size(1), x.size(2)).cuda())
+            weighted_features = x * scores
 
-        result = self.vae(weighted_features)
+        h_mu, h_log_var, decoded = self.vae(weighted_features)
 
-        return result
+        return scores, h_mu, h_log_var, decoded

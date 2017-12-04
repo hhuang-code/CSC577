@@ -14,7 +14,7 @@ extract ResNet feature, and one video per feature file
 """
 def get_res_feature():
     
-    dir_path = Path('/home/aaron/Documents/Courses/577/dataset/frame/Youtube/v71')
+    dir_path = Path('/home/aaron/Documents/Courses/577/dataset/frame/Youtube/v11')
 
     resnet = ResNet(224)
 
@@ -33,6 +33,6 @@ def get_res_feature():
             video_feature = np.vstack((video_feature, frame_feature))
         print(video_feature.shape)
 
-    h5file = h5py.File('/home/aaron/Documents/Courses/577/dataset/feature/Youtube/v71.h5', 'w')
+    h5file = h5py.File('/home/aaron/Documents/Courses/577/dataset/feature/Youtube/v11.h5', 'w')
     h5file.create_dataset('pool5', data = video_feature)
     h5file.close()
