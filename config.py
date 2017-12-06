@@ -19,7 +19,7 @@ def get_config(**kwargs):
 
     # LstmGan model args
     parser.add_argument('--input_size', type = int, default = 2048)
-    parser.add_argument('--hidden_size', type = int, default = 2048)
+    parser.add_argument('--hidden_size', type = int, default = 1024)
     parser.add_argument('--num_layers', type = int, default = 2)
     parser.add_argument('--summary_rate', type = int, default = 0.2)
     

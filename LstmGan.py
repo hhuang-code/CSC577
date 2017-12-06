@@ -50,8 +50,8 @@ class LstmGan(object):
     """
     reconstruct loss
     Args:
-        fea_h_last: given original vodieo feature, the output of the last hidden (top) layer of cLSTM, (1, hidden) = (1, 2048)
-        dec_h_last: given decoded video feature, the output of the last hidden (top) layer of cLSTM, (1, hidden) = (1, 2048)
+        fea_h_last: given original vodieo feature, the output of the last hidden (top) layer of cLSTM, (1, hidden) = (1, 1024)
+        dec_h_last: given decoded video feature, the output of the last hidden (top) layer of cLSTM, (1, hidden) = (1, 1024)
     """
     def get_reconst_loss(self, fea_h_last, dec_h_last):
         # L-2 norm
@@ -93,7 +93,7 @@ class LstmGan(object):
                 # feature: (1, seq_len, input_size) -> (seq_len, 1, 2048)
                 feature = feature.view(-1, 1, self.config.input_size)
                 
-# from cpu tensor to gpu Variable
+                # from cpu tensor to gpu Variable
                 feature = Variable(feature).cuda().detach()
                 
                 """ train sLSTM and eLSTM """
@@ -124,7 +124,7 @@ class LstmGan(object):
                 self.s_e_optimizer.step()
 
                 # add to loss history
-                s_e_loss_history.append(s_e_loss.data)
+                s_e_loss_history.append(s_e_loss.data.cpu())
 
                 """ train dLSTM """
                 if self.config.detail_flag:
@@ -146,7 +146,7 @@ class LstmGan(object):
                 self.d_optimizer.step()
 
                 # add to loss history
-                d_loss_history.append(d_loss.data)
+                d_loss_history.append(d_loss.data.cpu())
 
                 """ train cLSTM """
                 if batch_i > self.config.dis_start_batch:
@@ -154,14 +154,14 @@ class LstmGan(object):
                         tqdm.write('Training cLSTM')
 
                 # maximize
-                c_loss = -1 * get_gan_loss(fea_prob, dec_prob, rand_dec_prob)
+                c_loss = -1 * self.get_gan_loss(fea_prob, dec_prob, rand_dec_prob)
 
                 self.c_optimizer.zero_grad()
                 c_loss.backward()
                 self.c_optimizer.step()
                  
                 # add to loss history
-                c_loss_history.append(c_loss.data) 
+                c_loss_history.append(c_loss.data.cpu()) 
 
                 # bacth over
                 step += 1
