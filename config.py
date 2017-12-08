@@ -32,6 +32,12 @@ def get_config(**kwargs):
     # log
     parser.add_argument('--log_dir', type = str, default = Path('/tmp/log/'))
     parser.add_argument('--detail_flag', type = bool, default = True)
+
+    # path
+    parser.add_argument('--video_dir_youtube', type = str, default = Path('/tmp/577/dataset/video/Youtube'))
+    parser.add_argument('--frame_dir_youtube', type = str, default = Path('/tmp/577/dataset/frame/Youtube'))
+    parser.add_argument('--feature_dir_youtube', type = str, default = Path('/tmp/577/dataset/feature/Youtube'))
+    parser.add_argument('--gt_dir_youtube', type = str, default = Path('/tmp/577/dataset/gt/Youtube'))
     
     args = parser.parse_args()
 

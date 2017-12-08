@@ -16,7 +16,7 @@ class cLSTM(nn.Module):
 
     """
     Args:
-        x: reconstructed (or original) video feature, (seq_len, 1, hidden_size) = (seq_len, 1, 2048)
+        x: reconstructed (or original) video feature, (seq_len, 1, input_size) = (seq_len, 1, 2048)
     Return:
         h_last: the output of the last hidden (top) layer, (1, hidden_size) = (1, 1024) 
     """
@@ -41,9 +41,9 @@ class Discriminator(nn.Module):
 
     """
     Args:
-        x: reconstructed (or original) video feature, (seq_len, 1, hidden_size) = (seq_len, 1, 2048)
+        x: reconstructed (or original) video feature, (seq_len, 1, input_size) = (seq_len, 1, 2048)
     Return:
-        h: the output of the last hidden (top) layer, (1, hidden_size) = (1, 2048)
+        h: the output of the last hidden (top) layer, (1, hidden_size) = (1, 1024)
         prob: the discrimination result of cLSTM
     """
     def forward(self, x):
