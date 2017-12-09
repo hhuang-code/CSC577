@@ -50,7 +50,6 @@ class Discriminator(nn.Module):
         # h: shape (1, hidden_size) = (1, 1024)
         h = self.clstm(x)
 
-        #pdb.set_trace()
         # prob: a scalar
         prob = self.mlp(h).squeeze()
 

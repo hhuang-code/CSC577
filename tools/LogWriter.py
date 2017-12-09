@@ -10,3 +10,6 @@ class LogWriter(SummaryWriter):
         #pdb.set_trace()
         super(LogWriter, self).__init__(str(log_dir))
         self.log_dir = self.file_writer.get_logdir()
+
+    def update_loss(self, loss, step_i, name = 'loss'):
+        self.add_scalar(name, loss, step_i)

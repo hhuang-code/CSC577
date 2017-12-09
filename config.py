@@ -24,20 +24,23 @@ def get_config(**kwargs):
     parser.add_argument('--summary_rate', type = int, default = 0.2)
     
     # train
-    parser.add_argument('--n_epochs', type = int, default = 1)
+    parser.add_argument('--n_epochs', type = int, default = 50)
     parser.add_argument('--sum_learning_rate', type = float, default = 1e-4)
     parser.add_argument('--dis_learning_rate', type = float, default = 1e-5)
-    parser.add_argument('--dis_start_batch', type = int, default = 5)
+    parser.add_argument('--dis_start_batch', type = int, default = 15)
     
     # log
-    parser.add_argument('--log_dir', type = str, default = Path('/tmp/log/'))
+    parser.add_argument('--log_dir', type = str, default = Path('/localdisk/log/'))
     parser.add_argument('--detail_flag', type = bool, default = True)
 
-    # path
-    parser.add_argument('--video_dir_youtube', type = str, default = Path('/tmp/577/dataset/video/Youtube'))
-    parser.add_argument('--frame_dir_youtube', type = str, default = Path('/tmp/577/dataset/frame/Youtube'))
-    parser.add_argument('--feature_dir_youtube', type = str, default = Path('/tmp/577/dataset/feature/Youtube'))
-    parser.add_argument('--gt_dir_youtube', type = str, default = Path('/tmp/577/dataset/gt/Youtube'))
+    # dataset path
+    parser.add_argument('--video_dir_youtube', type = str, default = Path('/localdisk/577/dataset/video/Youtube'))
+    parser.add_argument('--frame_dir_youtube', type = str, default = Path('/localdisk/577/dataset/frame/Youtube'))
+    parser.add_argument('--feature_dir_youtube', type = str, default = Path('/localdisk/577/dataset/feature/Youtube'))
+    parser.add_argument('--gt_dir_youtube', type = str, default = Path('/localdisk/577/dataset/gt/Youtube'))
+   
+    # mode save path
+    parser.add_argument('--model_save_dir', type = str, default = Path('/localdisk/577/model/'))
     
     args = parser.parse_args()
 

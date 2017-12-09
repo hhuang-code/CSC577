@@ -26,9 +26,6 @@ def pre_process(config):
 
 if __name__ == '__main__':
 
-    # generate ResNet feature
-    #get_res_feature()
-    
     config = get_config(mode = 'train')
     
     #pre_process(config)
@@ -37,11 +34,12 @@ if __name__ == '__main__':
     
     train_loader = feature_loader(feature_dir, 'train')
 
-    #test_loader = feature_loader(feature_dir, 'test')
-    test_loader = None
+    test_loader = feature_loader(feature_dir, 'test')
 
     lstmgan = LstmGan(config, train_loader, test_loader)
 
     lstmgan.build()
 
-    lstmgan.train()
+    #lstmgan.train()
+
+    lstmgan.test()

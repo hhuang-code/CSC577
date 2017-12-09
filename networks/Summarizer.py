@@ -141,8 +141,8 @@ class Summarizer(nn.Module):
             # weighted features: (seq_len, 1, 2048)
             weighted_features = x * scores.view(-1, 1, 1)    # broadcasting
         else:
-            # generate random scores from normal distribution
-            scores = Variable(torch.randn(x.size(0), x.size(1), x.size(2)).cuda())
+            # generate random scores from uniform distribution
+            scores = Variable(torch.Tensor(x.size(0), x.size(1), x.size(2)).random_(0, 1).cuda())
             weighted_features = x * scores
 
         decoded = self.vae(weighted_features)
