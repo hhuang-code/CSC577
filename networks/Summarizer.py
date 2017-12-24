@@ -14,7 +14,7 @@ class sLSTM(nn.Module):
         self.bidirectional = bidirectional
         # hidde_size should be 1024
         self.lstm = nn.LSTM(input_size, hidden_size, num_layers, bidirectional = bidirectional)
-        self.to_score = nn.Linear(hidden_size * 2, 1) # bidirection -> scalar
+        self.to_score = nn.Sequential(nn.Linear(hidden_size * 2, 1), nn.Sigmoid()) # bidirection -> scalar
 
     """
     Args:
@@ -142,7 +142,8 @@ class Summarizer(nn.Module):
             weighted_features = x * scores.view(-1, 1, 1)    # broadcasting
         else:
             # generate random scores from uniform distribution
-            scores = Variable(torch.Tensor(x.size(0), x.size(1), x.size(2)).random_(0, 1).cuda())
+            # uniform_(0, 1): randomly select between 0 and 1
+            scores = Variable(torch.Tensor(x.size(0), x.size(1), x.size(2)).uniform_(0, 1).cuda())
             weighted_features = x * scores
 
         decoded = self.vae(weighted_features)

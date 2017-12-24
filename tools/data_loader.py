@@ -1,6 +1,7 @@
 import torch
 from torch.utils.data import Dataset, DataLoader
 
+import csv
 import h5py
 import numpy as np
 from pathlib import Path
@@ -39,3 +40,18 @@ def feature_loader(fea_dir, mode = 'train'):
         return DataLoader(FeatureData(fea_dir), batch_size = 1)
     else:
         raise "No such mode!"
+
+# load ground-truth file
+def gt_loader(gt_dir):
+    gt = []
+    with open(str(gt_dir) + '/gt.csv', 'r') as f:
+        reader = csv.reader(f)
+        for row in reader:
+            row_arr = []
+            for i in range(len(row)):
+                elem = int(row[i].strip())
+                row_arr.append(elem)
+            gt.append(row_arr)
+        f.close()
+
+    return gt
