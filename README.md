@@ -7,7 +7,7 @@ https://www.cs.rochester.edu/~cxu22/t/577F17/
 
 ## Final Project
 ```
-A Pytorch implement of the paper:
+A Pytorch implementation of the paper:
 @inproceedings{mahasseni2017unsupervised,
   title={Unsupervised video summarization with adversarial lstm networks},
   author={Mahasseni, Behrooz and Lam, Michael and Todorovic, Sinisa},
